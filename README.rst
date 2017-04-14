@@ -1,15 +1,9 @@
 pymemcache
 ==========
 
-.. image:: https://travis-ci.org/pinterest/pymemcache.png
-    :target: https://travis-ci.org/pinterest/pymemcache
-
-.. image:: https://img.shields.io/pypi/v/pymemcache.svg
-    :target: https://pypi.python.org/pypi/pymemcache
-
-.. image:: https://readthedocs.org/projects/pymemcache/badge/?version=master
-        :target: https://pymemcache.readthedocs.io/en/latest/
-        :alt: Master Documentation Status
+.. image:: https://readthedocs.org/projects/pymemcachecost/badge/?version=latest
+  :target: http://pymemcachecost.readthedocs.io/en/latest/?badge=latest
+  :alt: Documentation Status
 
 A comprehensive, fast, pure-Python memcached client.
 
@@ -52,7 +46,7 @@ Or with `Tox <http://tox.readthedocs.io/>`_:
 Usage
 =====
 
-See the documentation here: https://pymemcache.readthedocs.io/en/latest/
+See the documentation here: https://pymemcachecost.readthedocs.io/en/latest/
 
 Comparison with Other Libraries
 ===============================
