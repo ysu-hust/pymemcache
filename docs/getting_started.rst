@@ -1,9 +1,15 @@
 Getting started!
 ================
-A comprehensive, fast, pure-Python memcached client library.
+A comprehensive, fast, pure-Python memcached client library. 
+
+It also supports the memcached server, which uses COST-based replacment policy (e.g. Greedy-Dual).
+And one example of such memcached server is GD-Wheel.
+
+Li, Conglong, and Alan L. Cox. "GD-Wheel: a cost-aware replacement policy for key-value stores." Proceedings of the Tenth European Conference on Computer Systems. ACM, 2015.
 
 Basic Usage
 ------------
+The COST value should be specified explicitly, otherwise, it works as the original pymemcache client.
 
 .. code-block:: python
 
@@ -11,6 +17,16 @@ Basic Usage
 
     client = Client(('localhost', 11211))
     client.set('some_key', 'some_value')
+    result = client.get('some_key')
+
+The version using COST-based memcached server is as below. And it is similar for the HashClient.
+
+.. code-block:: python
+
+    from pymemcache.client.base import Client
+
+    client = Client(('localhost', 11211))
+    client.set('some_key', 'some_value', cost=10)
     result = client.get('some_key')
 
 Using a memcached cluster

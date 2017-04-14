@@ -271,7 +271,7 @@ class Client(object):
                 pass
         self.sock = None
 
-    def set(self, key, value, expire=0, noreply=None):
+    def set(self, key, value, expire=0, noreply=None, cost=-1):
         """
         The memcached "set" command.
 
@@ -290,9 +290,9 @@ class Client(object):
         """
         if noreply is None:
             noreply = self.default_noreply
-        return self._store_cmd(b'set', key, expire, noreply, value)
+        return self._store_cmd(b'set', key, expire, noreply, value, cost=cost)
 
-    def set_many(self, values, expire=0, noreply=None):
+    def set_many(self, values, expire=0, noreply=None, cost=-1):
         """
         A convenience function for setting multiple values.
 
@@ -314,12 +314,12 @@ class Client(object):
         # TODO: make this more performant by sending all the values first, then
         # waiting for all the responses.
         for key, value in six.iteritems(values):
-            self.set(key, value, expire, noreply)
+            self.set(key, value, expire, noreply, cost=cost)
         return True
 
     set_multi = set_many
 
-    def add(self, key, value, expire=0, noreply=None):
+    def add(self, key, value, expire=0, noreply=None, cost=-1):
         """
         The memcached "add" command.
 
@@ -338,9 +338,9 @@ class Client(object):
         """
         if noreply is None:
             noreply = self.default_noreply
-        return self._store_cmd(b'add', key, expire, noreply, value)
+        return self._store_cmd(b'add', key, expire, noreply, value, cost=cost)
 
-    def replace(self, key, value, expire=0, noreply=None):
+    def replace(self, key, value, expire=0, noreply=None, cost=-1):
         """
         The memcached "replace" command.
 
@@ -359,9 +359,9 @@ class Client(object):
         """
         if noreply is None:
             noreply = self.default_noreply
-        return self._store_cmd(b'replace', key, expire, noreply, value)
+        return self._store_cmd(b'replace', key, expire, noreply, value, cost=cost)
 
-    def append(self, key, value, expire=0, noreply=None):
+    def append(self, key, value, expire=0, noreply=None, cost=-1):
         """
         The memcached "append" command.
 
@@ -378,9 +378,9 @@ class Client(object):
         """
         if noreply is None:
             noreply = self.default_noreply
-        return self._store_cmd(b'append', key, expire, noreply, value)
+        return self._store_cmd(b'append', key, expire, noreply, value, cost=cost)
 
-    def prepend(self, key, value, expire=0, noreply=None):
+    def prepend(self, key, value, expire=0, noreply=None, cost=-1):
         """
         The memcached "prepend" command.
 
@@ -397,9 +397,9 @@ class Client(object):
         """
         if noreply is None:
             noreply = self.default_noreply
-        return self._store_cmd(b'prepend', key, expire, noreply, value)
+        return self._store_cmd(b'prepend', key, expire, noreply, value, cost=cost)
 
-    def cas(self, key, value, cas, expire=0, noreply=False):
+    def cas(self, key, value, cas, expire=0, noreply=False, cost=-1):
         """
         The memcached "cas" command.
 
@@ -416,7 +416,7 @@ class Client(object):
           the key didn't exist, False if it existed but had a different cas
           value and True if it existed and was changed.
         """
-        return self._store_cmd(b'cas', key, expire, noreply, value, cas)
+        return self._store_cmd(b'cas', key, expire, noreply, value, cas, cost=cost)
 
     def get(self, key, default=None):
         """
@@ -762,7 +762,7 @@ class Client(object):
                 return {}
             raise
 
-    def _store_cmd(self, name, key, expire, noreply, data, cas=None):
+    def _store_cmd(self, name, key, expire, noreply, data, cas=None, cost=-1):
         key = self.check_key(key)
         if not self.sock:
             self._connect()
@@ -784,11 +784,19 @@ class Client(object):
         if noreply:
             extra += b' noreply'
 
-        cmd = (name + b' ' + key + b' ' +
-               six.text_type(flags).encode('ascii') +
-               b' ' + six.text_type(expire).encode('ascii') +
-               b' ' + six.text_type(len(data)).encode('ascii') + extra +
-               b'\r\n' + data + b'\r\n')
+        if cost < 0:
+            cmd = (name + b' ' + key + b' ' +
+                   six.text_type(flags).encode('ascii') +
+                   b' ' + six.text_type(expire).encode('ascii') +
+                   b' ' + six.text_type(len(data)).encode('ascii') + extra +
+                   b'\r\n' + data + b'\r\n')
+        else:
+            cmd = (name + b' ' + key + b' ' +
+                   six.text_type(flags).encode('ascii') +
+                   b' ' + six.text_type(expire).encode('ascii') +
+                   b' ' + six.text_type(len(data)).encode('ascii') + 
+                   b' ' + six.text_type(cost).encode('ascii') + extra +
+                   b'\r\n' + data + b'\r\n')
 
         try:
             self.sock.sendall(cmd)
