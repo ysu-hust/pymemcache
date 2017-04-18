@@ -928,32 +928,32 @@ class PooledClient(object):
     def close(self):
         self.client_pool.clear()
 
-    def set(self, key, value, expire=0, noreply=None):
+    def set(self, key, value, expire=0, noreply=None, cost=-1):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
-            return client.set(key, value, expire=expire, noreply=noreply)
+            return client.set(key, value, expire=expire, noreply=noreply, cost=cost)
 
-    def set_many(self, values, expire=0, noreply=None):
+    def set_many(self, values, expire=0, noreply=None, cost=-1):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
-            return client.set_many(values, expire=expire, noreply=noreply)
+            return client.set_many(values, expire=expire, noreply=noreply, cost=cost)
 
     set_multi = set_many
 
-    def replace(self, key, value, expire=0, noreply=None):
+    def replace(self, key, value, expire=0, noreply=None, cost=-1):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
-            return client.replace(key, value, expire=expire, noreply=noreply)
+            return client.replace(key, value, expire=expire, noreply=noreply, cost=cost)
 
-    def append(self, key, value, expire=0, noreply=None):
+    def append(self, key, value, expire=0, noreply=None, cost=-1):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
-            return client.append(key, value, expire=expire, noreply=noreply)
+            return client.append(key, value, expire=expire, noreply=noreply, cost=cost)
 
-    def prepend(self, key, value, expire=0, noreply=None):
+    def prepend(self, key, value, expire=0, noreply=None, cost=-1):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
-            return client.prepend(key, value, expire=expire, noreply=noreply)
+            return client.prepend(key, value, expire=expire, noreply=noreply, cost=cost)
 
-    def cas(self, key, value, cas, expire=0, noreply=False):
+    def cas(self, key, value, cas, expire=0, noreply=False, cost=-1):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
             return client.cas(key, value, cas,
-                              expire=expire, noreply=noreply)
+                              expire=expire, noreply=noreply, cost=cost)
 
     def get(self, key, default=None):
         with self.client_pool.get_and_release(destroy_on_fail=True) as client:
